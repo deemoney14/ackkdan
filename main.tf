@@ -36,24 +36,25 @@ resource "aws_s3_bucket_website_configuration" "website" {
 resource "aws_s3_bucket_public_access_block" "public_access" {
     bucket = aws_s3_bucket.ackkdan.id
 
-    block_public_acls = false
-    block_public_policy = false
-    ignore_public_acls = false
-    restrict_public_buckets = false
+ block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
   
 }
 #Allow world to read it
 
 resource "aws_s3_bucket_policy" "public_read" {
-    bucket = aws_s3_bucket.ackkdan.id
-    policy = jsonencode({
-        Version = "2012-10-17"
-        Statement = [{
-            Sid = "PublicReadGetObject"
-            Effect = "Allow"
-            Principal = "*"
-            Action = "s3:GetObject"
-            Resource = "${aws_s3_bucket.static_website.arn}/*"
+  bucket = aws_s3_bucket.ackkdan.id
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [{
+      Sid       = "PublicReadGetObject"
+      Effect    = "Allow"
+      Principal = "*"
+      Action    = "s3:GetObject"
+      Resource  = "${aws_s3_bucket.ackkdan.arn}/*"
+
         }]
     })
   
@@ -61,11 +62,11 @@ resource "aws_s3_bucket_policy" "public_read" {
 
  #Upload website files (index.html, error.html, styles.css, and images)
 resource "aws_s3_object" "website_files" {
-  for_each = fileset("../website/", "**")
+  for_each = fileset("/home/sammy/containers/ackkdan_solutions/website", "**")
 
   bucket       = aws_s3_bucket.ackkdan.id
   key          = each.value
-  source       = "../website/${each.value}"
+  source       = "/home/sammy/containers/ackkdan_solutions/website/${each.value}"
   content_type = lookup({
     "html"  = "text/html",
     "css"   = "text/css",
